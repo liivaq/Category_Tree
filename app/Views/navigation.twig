@@ -1,0 +1,29 @@
+<nav class="bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <a href="/" class="text-white font-bold text-xl">Home</a>
+                </div>
+                <div>
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        {% if session.user_id is empty %}
+                            <a href="/login"
+                               class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Login</a>
+                            <a href="/register"
+                               class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Register</a>
+                        {% endif %}
+
+                        {% if session.user_id is not  empty %}
+                            <form action="/logout" method="POST">
+                                <button class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                                    Logout
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
