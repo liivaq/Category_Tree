@@ -2,6 +2,7 @@
 
 namespace App\Core;
 
+use App\Core\Response\JsonResponse;
 use App\Core\Response\Redirect;
 use App\Core\Response\Response;
 use App\Core\Response\View;
@@ -59,6 +60,10 @@ class Router
         if ($this->response instanceof View) {
             echo (new Renderer())->render($this->response);
             Session::unflash();
+        }
+
+        if ($this->response instanceof JsonResponse) {
+            echo $this->response->getJson();
         }
     }
 

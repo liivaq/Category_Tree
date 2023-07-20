@@ -2,6 +2,7 @@
 
 namespace App\Services\Section;
 
+use App\Core\Session;
 use App\Models\Section;
 use App\Repositories\SectionRepository;
 use App\Services\Section\Requests\CreateSectionRequest;
@@ -20,6 +21,7 @@ class CreateSectionService
         $section = new Section(
             $request->getTitle(),
             $request->getDescription(),
+            (int)Session::get('user_id'),
             $request->getParentId()
         );
 

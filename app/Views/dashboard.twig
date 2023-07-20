@@ -13,7 +13,8 @@
     <div class="">
         {% macro renderSections(sections) %}
             {% for section in sections %}
-                <div class="mx-auto bg-white p-8 border rounded shadow my-4">
+
+                <div id="main-section-{{ section.getId() }}" class="mx-auto bg-white p-8 border rounded shadow my-4">
                     <div id="viewmode-{{ section.getId() }}" class="view-mode">
                         <h2 class="font-semibold text-lg">{{ section.getTitle() }}</h2>
                         <p class="mb-4">{{ section.getDescription() }}</p>
@@ -22,7 +23,7 @@
                             <button
                                     data-target="{{ section.getId() }}"
                                     class="subsection-button bg-sky-600 hover:bg-sky-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                Show Subsections
+                                Show Subsections ({{ section.children|length }})
                             </button>
 
                             <button
@@ -31,7 +32,6 @@
                                 Add sub-section
                             </button>
 
-
                             <button
                                     data-target="{{ section.getId() }}"
                                     class="edit-button bg-amber-600 hover:bg-amber-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-blue-500 focus:border-blue-500">
@@ -39,40 +39,18 @@
                             </button>
 
                             <form action="/section/delete/{{ section.getId() }}" method="POST">
-                                <button class="bg-red-600 hover:bg-red-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                <button
+                                        data-section-id="{{ section.getId() }}"
+                                        class="delete-button bg-red-600 hover:bg-red-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                                     Delete
                                 </button>
                             </form>
                         </div>
                     </div>
 
-                    <div id="editmode-{{ section.getId() }}" class="editing-mode hidden ">
-                        <form class="my-4" action="/section/edit" method="POST">
-                            <label for="editTitle" class="block text-gray-700 text-sm font-bold mb-2">Title</label>
-                            <input
-                                    class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                    type="text"
-                                    name="title"
-                                    id="editTitle"
-                                    value="{{ section.getTitle() }}">
-
-                            <label for="editDescription"
-                                   class="block text-gray-700 text-sm font-bold mb-2">Description</label>
-                            <input
-                                    class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                    type="text"
-                                    name="description"
-                                    id="editDescription"
-                                    value="{{ section.getDescription() }}">
-                            <input type="hidden" name="id" value="{{ section.getId() }}">
-                            <button
-                                    class="bg-green-600 hover:bg-green-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                Save
-                            </button>
-
-                        </form>
+                    <div id="editmode-{{ section.getId() }}" class="editing-mode hidden">
+                        {% include 'components/edit.twig' %}
                     </div>
-
 
                     <div class="mt-4">
                         <form id="addForm-{{ section.getId() }}" class="hidden" action="/section/add" method="POST">
@@ -89,8 +67,10 @@
                                     id="description"
                                     name="description"
                                     type="text">
-                            <input type="hidden" name="parent_id" value="{{ section.id }}">
-                            <button class="bg-green-600 hover:bg-green-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <input type="hidden" name="parent_id" value="{{ section.getId() }}">
+                            <button
+                                    data-section-id="{{ section.getId() }}"
+                                    class="save-section-button bg-green-600 hover:bg-green-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                                 Save
                             </button>
                         </form>
@@ -110,45 +90,146 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const showFormBtn = document.getElementById('showCreate');
-            const myFormSection = document.getElementById('create');
+            // Function to toggle element visibility based on class name
+            function toggleElementVisibility(className) {
+                const element = document.querySelector(className);
+                if (element) {
+                    element.classList.toggle('hidden');
+                }
+            }
 
-            showFormBtn.addEventListener('click', function () {
-                myFormSection.classList.toggle('hidden');
+            // Function to handle click events for buttons
+            function handleButtonClick(event) {
+                const targetId = event.currentTarget.getAttribute('data-target');
+                if (targetId) {
+                    toggleElementVisibility(`#section-${targetId}`);
+                }
+            }
+
+            // Add event listener to showCreate button
+            const showCreateBtn = document.getElementById('showCreate');
+            showCreateBtn.addEventListener('click', function () {
+                toggleElementVisibility('#create');
             });
 
-            // Get all add buttons and add event listeners
+            // Add event listener to all buttons with "add-button" class
             const addButtons = document.querySelectorAll('.add-button');
             addButtons.forEach(button => {
-                button.addEventListener('click', function () {
-                    // Toggle the visibility of the form section based on the data-target attribute
-                    const targetFormId = this.getAttribute('data-target');
-                    const formSection = document.getElementById('addForm-' + targetFormId);
-                    formSection.classList.toggle('hidden');
+                button.addEventListener('click', function (event) {
+                    const targetId = event.currentTarget.getAttribute('data-target');
+                    toggleElementVisibility(`#addForm-${targetId}`);
                 });
             });
 
+            // Add event listener to all buttons with "subsection-button" class
             const subButtons = document.querySelectorAll('.subsection-button');
             subButtons.forEach(button => {
-                button.addEventListener('click', function () {
-                    const targetSubId = this.getAttribute('data-target');
-                    const subsectionContainer = document.getElementById('section-' + targetSubId);
-                    subsectionContainer.classList.toggle('hidden');
-                });
+                button.addEventListener('click', handleButtonClick);
             });
 
+            // Add event listener to all buttons with "edit-button" class
             const editButtons = document.querySelectorAll('.edit-button');
             editButtons.forEach(button => {
                 button.addEventListener('click', function () {
                     const sectionId = this.getAttribute('data-target');
-                    const viewMode = document.getElementById('viewmode-' + sectionId);
-                    const editingMode = document.getElementById('editmode-' + sectionId);
-
-                    viewMode.classList.toggle('hidden');
-                    editingMode.classList.toggle('hidden');
+                    toggleElementVisibility(`#viewmode-${sectionId}`);
+                    toggleElementVisibility(`#editmode-${sectionId}`);
                 });
             });
-        });
-    </script>
 
+            // Add event listener to all buttons with "cancel-button" class
+            const cancelButtons = document.querySelectorAll('.cancel-button');
+            cancelButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const sectionId = this.getAttribute('data-target');
+                    toggleElementVisibility(`#viewmode-${sectionId}`);
+                    toggleElementVisibility(`#editmode-${sectionId}`);
+                });
+            });
+
+
+            function handleSaveButton(event) {
+                const sectionId = event.currentTarget.getAttribute('data-section-id');
+                event.preventDefault(); // Prevent default form submission (page reload)
+
+                // Collect form data for the corresponding section
+                const editTitle = document.querySelector(`#editTitle-${sectionId}`).value;
+                const editDescription = document.querySelector(`#editDescription-${sectionId}`).value;
+
+                // Create data object to send in the request body
+                const data = {
+                    title: editTitle,
+                    description: editDescription,
+                    id: sectionId
+                };
+
+                // Send the AJAX request and handle the response (similar to previous code)
+                fetch('/section/edit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data),
+                })
+                    .then(response => response.json()) // Parse the JSON response
+                    .then(data => {
+                        // Handle the server response for the save button
+                        if (data.success) {
+                            // Update the view-mode content on the page if the response was successful
+                            const viewmodeSection = document.querySelector(`#viewmode-${sectionId}`);
+                            viewmodeSection.querySelector('.font-semibold').textContent = editTitle;
+                            viewmodeSection.querySelector('.mb-4').textContent = editDescription;
+                            toggleElementVisibility(`#viewmode-${sectionId}`);
+                            toggleElementVisibility(`#editmode-${sectionId}`);
+                        } else {
+                            // Handle the case when the update was not successful
+                            // Show an error message or take appropriate action
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
+
+            function handleDeleteButton(event) {
+                const sectionId = event.currentTarget.getAttribute('data-section-id');
+                event.preventDefault(); // Prevent default form submission (page reload)
+
+                // Send the AJAX request and handle the response (similar to previous code)
+                fetch(`/section/delete/${sectionId}`, {
+                    method: 'POST'
+                })
+                    .then(response => response.json()) // Parse the JSON response
+                    .then(data => {
+                        // Handle the server response for the delete button
+                        if (data.success) {
+                            // Deletion was successful, remove the corresponding element from the DOM
+                            const elementToRemove = document.querySelector(`#main-section-${sectionId}`);
+                            if (elementToRemove) {
+                                elementToRemove.remove();
+                            }
+                        } else {
+                            // Deletion was not successful, handle the error (e.g., show an error message)
+                            console.error('Deletion failed:', data.error);
+                        }
+                    })
+                    .catch(error => {
+                        // Handle any error that occurred during the AJAX request
+                        console.error('Error:', error);
+                    });
+            }
+
+            // Add event listeners to all buttons with "save-button" class
+            const saveButtons = document.querySelectorAll('.save-button');
+            saveButtons.forEach(button => {
+                button.addEventListener('click', handleSaveButton);
+            });
+
+            const deleteButtons = document.querySelectorAll('.delete-button');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', handleDeleteButton);
+            });
+        });
+
+    </script>
 {% endblock %}

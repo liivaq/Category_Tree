@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Core\Response\JsonResponse;
 use App\Core\Response\Redirect;
 use App\Core\Response\Response;
 use App\Core\Response\View;
@@ -18,21 +19,18 @@ class SectionController
 {
     private CreateSectionService $createSectionService;
     private IndexSectionService $indexSectionService;
-    private ShowSectionService $showSectionService;
     private DeleteSectionService $deleteSectionService;
     private UpdateSectionService $updateSectionService;
 
     public function __construct(
         IndexSectionService  $indexSectionService,
         CreateSectionService $createSectionService,
-        ShowSectionService   $showSectionService,
         DeleteSectionService $deleteSectionService,
         UpdateSectionService $updateSectionService
     )
     {
         $this->createSectionService = $createSectionService;
         $this->indexSectionService = $indexSectionService;
-        $this->showSectionService = $showSectionService;
         $this->deleteSectionService = $deleteSectionService;
         $this->updateSectionService = $updateSectionService;
     }
@@ -50,42 +48,35 @@ class SectionController
         return new View('dashboard', ['sections' => $treeSections]);
     }
 
-    public function create(array $vars): View
-    {
-        $parentId = $vars['id'] ?? null;
-
-        $parent = null;
-
-        if ($parentId) {
-            $parent = $this->showSectionService->execute((int)$parentId);
-        };
-
-        return new View('sections/create', [
-            'parent' => $parent
-        ]);
-    }
 
     public function store(): Redirect
     {
-
         $this->createSectionService->execute(new CreateSectionRequest($_POST));
         return new Redirect('/dashboard');
     }
 
-    public function delete(array $vars): Redirect
+    public function delete(array $vars): JsonResponse
     {
         $sectionId = (int)$vars['id'];
 
         $this->deleteSectionService->execute($sectionId);
 
-        return new Redirect('/dashboard');
+        return new JsonResponse([
+            'success' => true,
+        ]);
     }
 
-    public function update(): Redirect
+    public function update(): JsonResponse
     {
-        $this->updateSectionService->execute(new UpdateSectionRequest ($_POST));
+        $data = json_decode(file_get_contents('php://input'), true);
 
-        return new Redirect('/dashboard');
+        $section = $this->updateSectionService->execute(new UpdateSectionRequest ($data));
+        $updatedSection = $section->jsonSerialize();
+
+        return new JsonResponse([
+            'success' => true,
+            'data' => $updatedSection
+        ]);
     }
 
     private function buildTree(array $elements, $parentId = 0): array
@@ -101,7 +92,6 @@ class SectionController
                 $branch[] = $element;
             }
         }
-
         return $branch;
     }
 

@@ -7,6 +7,7 @@ class Section
     private string $title;
     private string $description;
     private array $children = [];
+    private int $userId;
 
     private ?int $parentId;
     private ?int $id;
@@ -14,12 +15,14 @@ class Section
     public function __construct(
         string $title,
         string $description,
+        int $userId,
         ?int   $parentId,
         ?int   $id = null
     )
     {
         $this->title = $title;
         $this->description = $description;
+        $this->userId = $userId;
         $this->id = $id;
         $this->parentId = $parentId;
     }
@@ -42,6 +45,11 @@ class Section
     public function getParentId(): ?int
     {
         return $this->parentId;
+    }
+
+    public function getUserId()
+    {
+        return $this->userId;
     }
 
     public function setTitle(string $title):void
@@ -72,6 +80,15 @@ class Section
     public function getChildren()
     {
         return $this->children;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->getId(),
+            'title' => $this->getTitle(),
+            'description' =>$this->getDescription(),
+        ];
     }
 
 }

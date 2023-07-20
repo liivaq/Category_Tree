@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 return [
     ['GET', '/login' , ['App\Controllers\AuthorisationController', 'login']],
     ['POST', '/login' , ['App\Controllers\AuthorisationController', 'authorize']],
@@ -13,7 +12,6 @@ return [
 
     ['GET', '/dashboard' , ['App\Controllers\SectionController', 'index']],
 
-    ['GET', '/section/add[/{id}]' , ['App\Controllers\SectionController', 'create']],
     ['POST', '/section/add' , ['App\Controllers\SectionController', 'store']],
     ['POST', '/section/edit' , ['App\Controllers\SectionController', 'update']],
     ['POST', '/section/delete/{id}' , ['App\Controllers\SectionController', 'delete']],

@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Core\Database;
+use App\Core\Session;
 use App\Models\Section;
 use Doctrine\DBAL\Connection;
 
@@ -21,6 +22,7 @@ class SectionRepository
             ->createQueryBuilder()
             ->select('*')
             ->from('sections')
+            ->where('user_id ='.Session::get('user_id'))
             ->fetchAllAssociative();
 
         $sectionCollection = [];
@@ -41,11 +43,13 @@ class SectionRepository
             ->values([
                 'title' => ':title',
                 'description' => ':description',
-                'parent_id' => ':parentId'
+                'parent_id' => ':parentId',
+                'user_id' => ':userId'
             ])
             ->setParameter('title', $section->getTitle())
             ->setParameter('description', $section->getDescription())
             ->setParameter('parentId', $section->getParentId())
+            ->setParameter('userId', $section->getUserId())
             ->executeStatement();
     }
 
@@ -89,6 +93,7 @@ class SectionRepository
         return new Section(
             $section->title,
             $section->description,
+            $section->user_id,
             $section->parent_id,
             $section->id,
         );

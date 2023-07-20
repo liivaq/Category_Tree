@@ -2,6 +2,7 @@
 
 namespace App\Services\Section;
 
+use App\Models\Section;
 use App\Repositories\SectionRepository;
 use App\Services\Section\Requests\UpdateSectionRequest;
 
@@ -14,15 +15,16 @@ class UpdateSectionService
         $this->sectionRepository = $sectionRepository;
     }
 
-    public function execute(UpdateSectionRequest $request)
+    public function execute(UpdateSectionRequest $request): Section
     {
         $section = $this->sectionRepository->findById($request->getId());
 
         $section->setTitle($request->getTitle());
         $section->setDescription($request->getDescription());
 
-
         $this->sectionRepository->update($section);
+
+        return $section;
     }
 
 }
