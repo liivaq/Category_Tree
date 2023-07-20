@@ -13,31 +13,35 @@ use App\Services\User\Requests\LoginUserRequest;
 use App\Services\ValidationService;
 
 class AuthorisationController
-{ private ValidationService $validationService;
+{
+    private ValidationService $validationService;
     private LoginUserService $loginUserService;
 
-    public function __construct()
+    public function __construct(
+        LoginUserService  $loginUserService,
+        ValidationService $validationService)
     {
-        $this->loginUserService = new LoginUserService();
-        $this->validationService = new ValidationService();
+        $this->loginUserService = $loginUserService;
+        $this->validationService = $validationService;
     }
+
     public function login(): Response
     {
-        if (Session::has('user_id')){
+        if (Session::has('user_id')) {
             return new Redirect ('/dashboard');
         }
 
         return new View('login');
     }
 
-    public function authorize()
+    public function authorize(): Redirect
     {
         try {
 
             $this->validationService->validateLogin($_POST);
             $this->loginUserService->execute(new LoginUserRequest($_POST));
 
-        } catch (ValidationException | InvalidCredentialsException $validationException) {
+        } catch (ValidationException|InvalidCredentialsException $validationException) {
             return new Redirect('/login');
         }
 
@@ -45,7 +49,8 @@ class AuthorisationController
 
     }
 
-    public function logout(){
+    public function logout(): Redirect
+    {
         Session::destroy();
         return new Redirect('/');
     }

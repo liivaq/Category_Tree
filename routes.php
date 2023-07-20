@@ -11,5 +11,9 @@ return [
     ['GET', '/register' , ['App\Controllers\RegistrationController', 'register']],
     ['POST', '/register' , ['App\Controllers\RegistrationController', 'store']],
 
-    ['GET', '/dashboard' , ['App\Controllers\HomeController', 'dashboard']],
+    ['GET', '/dashboard' , ['App\Controllers\SectionController', 'index']],
+
+    ['GET', '/section/add[/{id}]' , ['App\Controllers\SectionController', 'create']],
+    ['POST', '/section/add' , ['App\Controllers\SectionController', 'store']],
+    ['POST', '/section/delete/{id}' , ['App\Controllers\SectionController', 'delete']],
 ];

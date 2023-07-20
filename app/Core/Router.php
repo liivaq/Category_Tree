@@ -45,7 +45,7 @@ class Router
                 $vars = $routeInfo[2];
 
                 [$controller, $method] = $handler;
-                $this->response = (new $controller)->{$method}($vars);
+                $this->response = Container::build()->get($controller)->{$method}($vars);
         }
         return $this;
     }

@@ -6,25 +6,33 @@ use App\Core\Response\Redirect;
 use App\Core\Response\Response;
 use App\Core\Response\View;
 use App\Core\Session;
+use App\Exceptions\InvalidCredentialsException;
 use App\Exceptions\ValidationException;
+use App\Services\User\LoginUserService;
 use App\Services\User\RegisterUserService;
+use App\Services\User\Requests\LoginUserRequest;
 use App\Services\User\Requests\RegisterUserRequest;
 use App\Services\ValidationService;
 
 class RegistrationController
 {
-    private ValidationService $validationService;
     private RegisterUserService $registerUserService;
+    private LoginUserService $loginUserService;
+    private ValidationService $validationService;
 
-    public function __construct()
+    public function __construct(
+        RegisterUserService $registerUserService,
+        LoginUserService    $loginUserService,
+        ValidationService   $validationService)
     {
-        $this->registerUserService = new RegisterUserService();
-        $this->validationService = new ValidationService();
+        $this->registerUserService = $registerUserService;
+        $this->loginUserService = $loginUserService;
+        $this->validationService = $validationService;
     }
 
     public function index(): Response
     {
-        if (Session::has('user_id')){
+        if (Session::has('user_id')) {
             return new Redirect ('/dashboard');
         }
 
@@ -34,7 +42,7 @@ class RegistrationController
 
     public function register(): Response
     {
-        if (Session::has('user_id')){
+        if (Session::has('user_id')) {
             return new Redirect ('/dashboard');
         }
 
@@ -44,9 +52,12 @@ class RegistrationController
     public function store(): Redirect
     {
         try {
+
             $this->validationService->validateRegistration($_POST);
             $this->registerUserService->execute(new RegisterUserRequest($_POST));
-        } catch (ValidationException $validationException) {
+            $this->loginUserService->execute(new LoginUserRequest($_POST));
+
+        } catch (ValidationException|InvalidCredentialsException $validationException) {
             return new Redirect('/');
         }
 

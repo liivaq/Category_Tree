@@ -1,0 +1,24 @@
+{% macro renderSection(section, level = 0) %}
+    <div class="mx-auto bg-white p-8 border rounded shadow mb-4" style="margin-left: {{ level * 20 }}px;">
+        <h2 class="font-semibold text-lg">{{ section.title }}</h2>
+        <p class="mb-4">{{ section.description }}</p>
+        <input type="hidden" value="{{ section.id }}" />
+        <div class="space-x-4">
+            <button class="bg-sky-600 hover:bg-sky-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-blue-500 focus:border-blue-500" data-id="{{ section.id }}">
+                <a href="/section/add">Add sub-section</a>
+            </button>
+            <button class="bg-amber-600 hover:bg-amber-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-blue-500 focus:border-blue-500" data-id="{{ section.id }}">
+                Edit
+            </button>
+            <button class="bg-red-600 hover:bg-red-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-blue-500 focus:border-blue-500" data-id="{{ section.id }}">
+                Delete
+            </button>
+        </div>
+    </div>
+
+    {% if section.subsections is not empty %}
+        {% for subsection in section.subsections %}
+            {{ _self.renderSection(subsection, level + 1) }}
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
