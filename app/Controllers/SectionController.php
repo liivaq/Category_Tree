@@ -10,7 +10,9 @@ use App\Services\Section\CreateSectionService;
 use App\Services\Section\DeleteSectionService;
 use App\Services\Section\IndexSectionService;
 use App\Services\Section\Requests\CreateSectionRequest;
+use App\Services\Section\Requests\UpdateSectionRequest;
 use App\Services\Section\ShowSectionService;
+use App\Services\Section\UpdateSectionService;
 
 class SectionController
 {
@@ -18,18 +20,21 @@ class SectionController
     private IndexSectionService $indexSectionService;
     private ShowSectionService $showSectionService;
     private DeleteSectionService $deleteSectionService;
+    private UpdateSectionService $updateSectionService;
 
     public function __construct(
         IndexSectionService  $indexSectionService,
         CreateSectionService $createSectionService,
         ShowSectionService   $showSectionService,
-        DeleteSectionService $deleteSectionService
+        DeleteSectionService $deleteSectionService,
+        UpdateSectionService $updateSectionService
     )
     {
         $this->createSectionService = $createSectionService;
         $this->indexSectionService = $indexSectionService;
         $this->showSectionService = $showSectionService;
         $this->deleteSectionService = $deleteSectionService;
+        $this->updateSectionService = $updateSectionService;
     }
 
     public function index(): Response
@@ -72,6 +77,13 @@ class SectionController
         $sectionId = (int)$vars['id'];
 
         $this->deleteSectionService->execute($sectionId);
+
+        return new Redirect('/dashboard');
+    }
+
+    public function update(): Redirect
+    {
+        $this->updateSectionService->execute(new UpdateSectionRequest ($_POST));
 
         return new Redirect('/dashboard');
     }

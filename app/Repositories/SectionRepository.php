@@ -49,6 +49,19 @@ class SectionRepository
             ->executeStatement();
     }
 
+    public function update(Section $section)
+    {
+        $this->connection
+            ->createQueryBuilder()
+            ->update('sections')
+            ->set('title', ':title')
+            ->set('description', ':description')
+            ->setParameter('title', $section->getTitle())
+            ->setParameter('description', $section->getDescription())
+            ->where('id = '.$section->getId())
+            ->executeStatement();
+    }
+
     public function delete(Section $section)
     {
         $this->connection

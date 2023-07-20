@@ -15,5 +15,6 @@ return [
 
     ['GET', '/section/add[/{id}]' , ['App\Controllers\SectionController', 'create']],
     ['POST', '/section/add' , ['App\Controllers\SectionController', 'store']],
+    ['POST', '/section/edit' , ['App\Controllers\SectionController', 'update']],
     ['POST', '/section/delete/{id}' , ['App\Controllers\SectionController', 'delete']],
 ];

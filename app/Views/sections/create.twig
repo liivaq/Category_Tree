@@ -1,4 +1,4 @@
-<div id="create" class="mx-auto bg-white p-8 border rounded shadow hidden">
+<div id="create" class="mx-auto bg-white p-8 border rounded shadow hidden mb-4">
     <h2 class="text-2xl font-bold mb-4">Add a new section</h2>
     <form action="/section/add" method="POST" novalidate>
         <div class="mb-4">
@@ -17,7 +17,7 @@
                     id="description"
                     name="description"
                     class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    required rows="10"></textarea>
+                    required rows="4"></textarea>
             <p class="text-sm text-red-400">{{ session.flash.errors.description[0] }}</p>
             <input type="hidden" name="parent_id" value="{{ parent.id ?? null }}">
         </div>
