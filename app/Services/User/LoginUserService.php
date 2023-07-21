@@ -7,6 +7,7 @@ use App\Exceptions\InvalidCredentialsException;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use App\Services\User\Requests\LoginUserRequest;
+use Doctrine\DBAL\Exception;
 
 class LoginUserService
 {
@@ -17,16 +18,14 @@ class LoginUserService
         $this->userRepository = new UserRepository();
     }
 
+    /**
+     * @throws InvalidCredentialsException
+     * @throws Exception
+     */
     public function execute(LoginUserRequest $request)
     {
-        try {
-
-            $user = $this->userRepository->findByEmail($request->getEmail());
-            $this->login($user, $request);
-
-        } catch (InvalidCredentialsException $invalidCredentialsException) {
-            throw $invalidCredentialsException;
-        }
+        $user = $this->userRepository->findByEmail($request->getEmail());
+        $this->login($user, $request);
     }
 
     /**

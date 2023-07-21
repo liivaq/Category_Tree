@@ -11,12 +11,18 @@ use FastRoute;
 class Router
 {
     private Response $response;
+    private array $routes;
+    public function __construct()
+    {
+        $this->routes = require_once '../routes.php';
+
+    }
+
     public function route()
     {
         $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
-            $routes = require_once '../routes.php';
 
-            foreach ($routes as $route) {
+            foreach ($this->routes as $route) {
                 [$method, $route, $handler] = $route;
                 $r->addRoute($method, $route, $handler);
             }
@@ -24,7 +30,6 @@ class Router
 
         $httpMethod = $_SERVER['REQUEST_METHOD'];
         $uri = $_SERVER['REQUEST_URI'];
-
 
         if (false !== $pos = strpos($uri, '?')) {
             $uri = substr($uri, 0, $pos);
@@ -35,11 +40,7 @@ class Router
 
         switch ($routeInfo[0]) {
             case FastRoute\Dispatcher::NOT_FOUND:
-                // ... 404 Not Found
-                break;
-            case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
-                $allowedMethods = $routeInfo[1];
-                // ... 405 Method Not Allowed
+                $this->response = new View('errors/404');
                 break;
             case FastRoute\Dispatcher::FOUND:
                 $handler = $routeInfo[1];
@@ -59,12 +60,13 @@ class Router
 
         if ($this->response instanceof View) {
             echo (new Renderer())->render($this->response);
-            Session::unflash();
         }
 
         if ($this->response instanceof JsonResponse) {
             echo $this->response->getJson();
         }
+
+        Session::unflash();
     }
 
 }

@@ -1,11 +1,13 @@
 <?php declare(strict_types=1);
 
 namespace App\Core;
+
 use App\Repositories\UserRepository;
 
 class Validator
 {
     public static array $errors = [];
+
 
     public static function email(string $email)
     {
@@ -40,6 +42,14 @@ class Validator
     {
         if(strlen(trim($input)) < $minLength){
             self::$errors[strtolower($label)][] = $label.' has to be at least '.$minLength.' characters' ;
+        }
+    }
+
+    public static function exists(string $email)
+    {
+        $userRepository = new UserRepository();
+        if($userRepository->findByEmail($email)){
+            self::$errors['email'][] = 'Email is already taken';
         }
     }
 

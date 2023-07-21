@@ -6,6 +6,7 @@ use App\Core\Database;
 use App\Core\Session;
 use App\Models\Section;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 
 class SectionRepository
 {
@@ -16,26 +17,31 @@ class SectionRepository
         $this->connection = Database::connect();
     }
 
-    public function all()
+    /**
+     * @throws Exception
+     */
+    public function all(): array
     {
         $sections = $this->connection
             ->createQueryBuilder()
             ->select('*')
             ->from('sections')
-            ->where('user_id ='.Session::get('user_id'))
+            ->where('user_id = ' . Session::get('user_id'))
             ->fetchAllAssociative();
 
         $sectionCollection = [];
 
-        foreach ($sections as $section)
-        {
+        foreach ($sections as $section) {
             $sectionCollection[] = $this->buildModel((object)$section);
         }
 
         return $sectionCollection;
     }
 
-    public function store(Section $section)
+    /**
+     * @throws Exception
+     */
+    public function store(Section $section):void
     {
         $this->connection
             ->createQueryBuilder()
@@ -53,7 +59,10 @@ class SectionRepository
             ->executeStatement();
     }
 
-    public function update(Section $section)
+    /**
+     * @throws Exception
+     */
+    public function update(Section $section): void
     {
         $this->connection
             ->createQueryBuilder()
@@ -62,33 +71,39 @@ class SectionRepository
             ->set('description', ':description')
             ->setParameter('title', $section->getTitle())
             ->setParameter('description', $section->getDescription())
-            ->where('id = '.$section->getId())
+            ->where('id = ' . $section->getId())
             ->executeStatement();
     }
 
-    public function delete(Section $section)
+    /**
+     * @throws Exception
+     */
+    public function delete(Section $section): void
     {
         $this->connection
             ->createQueryBuilder()
             ->delete('sections')
-            ->where('id ='.$section->getId())
+            ->where('id =' . $section->getId())
             ->executeStatement();
     }
 
 
-    public function findById(int $id)
+    /**
+     * @throws Exception
+     */
+    public function findById(int $id): Section
     {
         $section = $this->connection
             ->createQueryBuilder()
             ->select('*')
             ->from('sections')
-            ->where('id = '.$id)
+            ->where('id = ' . $id)
             ->fetchAssociative();
 
-        return $this->buildModel((object) $section);
+        return $this->buildModel((object)$section);
     }
 
-    public function buildModel(\stdClass $section)
+    public function buildModel(\stdClass $section): Section
     {
         return new Section(
             $section->title,

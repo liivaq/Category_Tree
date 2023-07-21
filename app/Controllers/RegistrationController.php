@@ -13,6 +13,7 @@ use App\Services\User\RegisterUserService;
 use App\Services\User\Requests\LoginUserRequest;
 use App\Services\User\Requests\RegisterUserRequest;
 use App\Services\ValidationService;
+use Doctrine\DBAL\Exception;
 
 class RegistrationController
 {
@@ -29,16 +30,6 @@ class RegistrationController
         $this->loginUserService = $loginUserService;
         $this->validationService = $validationService;
     }
-
-    public function index(): Response
-    {
-        if (Session::has('user_id')) {
-            return new Redirect ('/dashboard');
-        }
-
-        return new View('register');
-    }
-
 
     public function register(): Response
     {
@@ -58,6 +49,12 @@ class RegistrationController
             $this->loginUserService->execute(new LoginUserRequest($_POST));
 
         } catch (ValidationException|InvalidCredentialsException $validationException) {
+
+            return new Redirect('/');
+
+        } catch (Exception $databaseException) {
+
+            Session::flash('database_error', 'Sorry, there was a problem connecting with the database!');
             return new Redirect('/');
         }
 

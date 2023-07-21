@@ -3,6 +3,7 @@
 namespace App\Services\Section;
 
 use App\Repositories\SectionRepository;
+use Doctrine\DBAL\Exception;
 
 class IndexSectionService
 {
@@ -13,7 +14,10 @@ class IndexSectionService
         $this->sectionRepository = $sectionRepository;
     }
 
-    public function execute()
+    /**
+     * @throws Exception
+     */
+    public function execute(): array
     {
         return $this->sectionRepository->all();
     }

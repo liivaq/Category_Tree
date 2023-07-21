@@ -86,6 +86,7 @@ class Section
     {
         return [
             'id' => $this->getId(),
+            'parent_id' => $this->getParentId(),
             'title' => $this->getTitle(),
             'description' =>$this->getDescription(),
         ];

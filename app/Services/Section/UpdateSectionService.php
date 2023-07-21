@@ -5,6 +5,7 @@ namespace App\Services\Section;
 use App\Models\Section;
 use App\Repositories\SectionRepository;
 use App\Services\Section\Requests\UpdateSectionRequest;
+use Doctrine\DBAL\Exception;
 
 class UpdateSectionService
 {
@@ -15,6 +16,9 @@ class UpdateSectionService
         $this->sectionRepository = $sectionRepository;
     }
 
+    /**
+     * @throws Exception
+     */
     public function execute(UpdateSectionRequest $request): Section
     {
         $section = $this->sectionRepository->findById($request->getId());

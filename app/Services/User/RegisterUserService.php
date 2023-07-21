@@ -5,6 +5,7 @@ namespace App\Services\User;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use App\Services\User\Requests\RegisterUserRequest;
+use Doctrine\DBAL\Exception;
 
 class RegisterUserService
 {
@@ -14,10 +15,12 @@ class RegisterUserService
         $this->userRepository = new UserRepository();
     }
 
+    /**
+     * @throws Exception
+     */
     public function execute(RegisterUserRequest $request)
     {
         $user = new User(
-            $request->getUsername(),
             $request->getEmail(),
             $request->getPassword(),
         );

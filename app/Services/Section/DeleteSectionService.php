@@ -3,6 +3,7 @@
 namespace App\Services\Section;
 
 use App\Repositories\SectionRepository;
+use Doctrine\DBAL\Exception;
 
 class DeleteSectionService
 {
@@ -13,6 +14,9 @@ class DeleteSectionService
         $this->sectionRepository = $sectionRepository;
     }
 
+    /**
+     * @throws Exception
+     */
     public function execute(int $id)
     {
         $section = $this->sectionRepository->findById($id);

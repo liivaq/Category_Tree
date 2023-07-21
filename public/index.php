@@ -9,4 +9,4 @@ session_start();
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__."/..");
 $dotenv->load();
 
-(new Router)->route()->resolve();
+(new Router())->route()->resolve();

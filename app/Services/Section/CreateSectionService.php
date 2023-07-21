@@ -6,6 +6,7 @@ use App\Core\Session;
 use App\Models\Section;
 use App\Repositories\SectionRepository;
 use App\Services\Section\Requests\CreateSectionRequest;
+use Doctrine\DBAL\Exception;
 
 class CreateSectionService
 {
@@ -16,6 +17,9 @@ class CreateSectionService
         $this->sectionRepository = $sectionRepository;
     }
 
+    /**
+     * @throws Exception
+     */
     public function execute(CreateSectionRequest $request)
     {
         $section = new Section(

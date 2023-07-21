@@ -12,8 +12,8 @@ use App\Services\Section\DeleteSectionService;
 use App\Services\Section\IndexSectionService;
 use App\Services\Section\Requests\CreateSectionRequest;
 use App\Services\Section\Requests\UpdateSectionRequest;
-use App\Services\Section\ShowSectionService;
 use App\Services\Section\UpdateSectionService;
+use Doctrine\DBAL\Exception;
 
 class SectionController
 {
@@ -37,46 +37,71 @@ class SectionController
 
     public function index(): Response
     {
-        if (!Session::has('user_id')) {
-            return new Redirect('/');
+        try {
+            $sections = $this->indexSectionService->execute();
+            $treeSections = $this->buildTree($sections);
+
+            return new View('sections/index', ['sections' => $treeSections]);
+
+        } catch (Exception $exception) {
+
+            Session::flash('database_error', 'Sorry, there was a problem connecting with the database!');
+            return new View('sections/index');
+
         }
-
-        $sections = $this->indexSectionService->execute();
-
-        $treeSections = $this->buildTree($sections);
-
-        return new View('dashboard', ['sections' => $treeSections]);
     }
-
 
     public function store(): Redirect
     {
-        $this->createSectionService->execute(new CreateSectionRequest($_POST));
-        return new Redirect('/dashboard');
+        try {
+
+            $this->createSectionService->execute(new CreateSectionRequest($_POST));
+            return new Redirect('/dashboard');
+
+        } catch (Exception $exception) {
+
+            Session::flash('database_error', 'Sorry, there was a problem connecting with the database!');
+            return new Redirect('/dashboard');
+        }
     }
 
     public function delete(array $vars): JsonResponse
     {
-        $sectionId = (int)$vars['id'];
+        try {
+            $sectionId = (int)$vars['id'];
 
-        $this->deleteSectionService->execute($sectionId);
+            $this->deleteSectionService->execute($sectionId);
 
-        return new JsonResponse([
-            'success' => true,
-        ]);
+            return new JsonResponse([
+                'success' => true,
+            ]);
+        } catch (Exception $exception) {
+
+            return new JsonResponse([
+                'error' => true,
+            ]);
+        }
     }
 
     public function update(): JsonResponse
     {
-        $data = json_decode(file_get_contents('php://input'), true);
+        try {
+            $data = json_decode(file_get_contents('php://input'), true);
 
-        $section = $this->updateSectionService->execute(new UpdateSectionRequest ($data));
-        $updatedSection = $section->jsonSerialize();
+            $section = $this->updateSectionService->execute(new UpdateSectionRequest ($data));
+            $updatedSection = $section->jsonSerialize();
 
-        return new JsonResponse([
-            'success' => true,
-            'data' => $updatedSection
-        ]);
+            return new JsonResponse([
+                'success' => true,
+                'data' => $updatedSection
+            ]);
+
+        } catch (\Exception $exception) {
+
+            return new JsonResponse([
+                'error' => true
+            ]);
+        }
     }
 
     private function buildTree(array $elements, $parentId = 0): array

@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Core\Database;
 use App\Models\User;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 
 class UserRepository
 {
@@ -15,24 +16,28 @@ class UserRepository
         $this->connection = Database::connect();
     }
 
-    public function store(User $user){
-
+    /**
+     * @throws Exception
+     */
+    public function store(User $user)
+    {
         $password = password_hash($user->getPassword(), PASSWORD_BCRYPT);
 
         $this->connection
             ->createQueryBuilder()
             ->insert('users')
             ->values([
-                'username' => ':username',
                 'email' => ':email',
                 'password' => ':password',
             ])
-            ->setParameter('username', $user->getUsername())
             ->setParameter('email', $user->getEmail())
             ->setParameter('password', $password)
             ->executeStatement();
     }
 
+    /**
+     * @throws Exception
+     */
     public function findByEmail(string $email): ?User
     {
         $user = $this->connection
@@ -44,7 +49,7 @@ class UserRepository
             ->fetchAssociative();
 
 
-        if(!$user) {
+        if (!$user) {
             return null;
         }
 
@@ -54,7 +59,6 @@ class UserRepository
     private function buildModel(\stdClass $user): User
     {
         return new User(
-            $user->username,
             $user->email,
             $user->password,
             $user->id

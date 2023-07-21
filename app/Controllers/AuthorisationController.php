@@ -11,6 +11,7 @@ use App\Exceptions\ValidationException;
 use App\Services\User\LoginUserService;
 use App\Services\User\Requests\LoginUserRequest;
 use App\Services\ValidationService;
+use Doctrine\DBAL\Exception;
 
 class AuthorisationController
 {
@@ -19,7 +20,8 @@ class AuthorisationController
 
     public function __construct(
         LoginUserService  $loginUserService,
-        ValidationService $validationService)
+        ValidationService $validationService
+    )
     {
         $this->loginUserService = $loginUserService;
         $this->validationService = $validationService;
@@ -41,8 +43,15 @@ class AuthorisationController
             $this->validationService->validateLogin($_POST);
             $this->loginUserService->execute(new LoginUserRequest($_POST));
 
-        } catch (ValidationException|InvalidCredentialsException $validationException) {
+        } catch (ValidationException | InvalidCredentialsException $validationException) {
+
             return new Redirect('/login');
+
+        } catch (Exception $e) {
+
+            Session::flash('database_error', 'Sorry, there was a problem connecting with the database!');
+            return new Redirect('/login');
+
         }
 
         return new Redirect('/dashboard');
@@ -52,7 +61,7 @@ class AuthorisationController
     public function logout(): Redirect
     {
         Session::destroy();
-        return new Redirect('/');
+        return new Redirect('/login');
     }
 
 }
