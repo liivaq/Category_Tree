@@ -45,6 +45,7 @@ class AuthorisationController
 
         } catch (ValidationException | InvalidCredentialsException $validationException) {
 
+            Session::flash('old', $_POST);
             return new Redirect('/login');
 
         } catch (Exception $e) {
