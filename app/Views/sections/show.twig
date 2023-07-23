@@ -1,32 +1,24 @@
-
-<div id="main-section-{{ section.getId() }}" class="mx-auto bg-white p-8 border rounded shadow my-4">
-    <div id="viewmode-{{ section.getId() }}" class="view-mode">
-        <h2 class="font-semibold text-lg">{{ section.getTitle() }}</h2>
-        <p class="mb-4">{{ section.getDescription() }}</p>
-        <input type="hidden" value="{{ section.getId() }}"/>
+<div id="main-section-{{ section.id }}" class="mx-auto bg-white p-8 border rounded shadow my-4">
+    <div id="viewmode-{{ section.id }}" class="view-mode">
+        <h2 class="font-semibold text-lg">{{ section.title }}</h2>
+        <p class="mb-4">{{ section.description }}</p>
+        <input type="hidden" value="{{ section.id }}"/>
         <div class="space-x-4 flex">
             <button
-                    id="subsection-button-{{ section.getId() }}"
-                    data-target="{{ section.getId() }}"
-                    class="subsection-button bg-sky-600 hover:bg-sky-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                Show Subsections ({{ section.children|length }})
-            </button>
-
-            <button
-                    data-target="{{ section.getId() }}"
+                    data-target="{{ section.id }}"
                     class="add-button bg-sky-600 hover:bg-sky-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                 Add sub-section
             </button>
 
             <button
-                    data-target="{{ section.getId() }}"
+                    data-target="{{ section.id }}"
                     class="edit-button bg-amber-600 hover:bg-amber-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                 Edit
             </button>
 
-            <form action="/section/delete/{{ section.getId() }}" method="POST">
+            <form action="/section/delete/{{ section.id }}" method="POST">
                 <button
-                        data-section-id="{{ section.getId() }}"
+                        data-section-id="{{ section.id }}"
                         class="delete-button bg-red-600 hover:bg-red-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     Delete
                 </button>
@@ -34,12 +26,12 @@
         </div>
     </div>
 
-    <div id="editmode-{{ section.getId() }}" class="editing-mode hidden">
+    <div id="editmode-{{ section.id }}" class="editing-mode hidden">
         {% include 'components/edit.twig' %}
     </div>
 
     <div class="mt-4">
-        <form id="addForm-{{ section.getId() }}" class="hidden" action="/section/add" method="POST">
+        <form id="addForm-{{ section.id }}" class="hidden" action="/section/add" method="POST">
             <label for="title-{{ section.id }}" class="block text-gray-700 text-sm font-bold mb-2">Title</label>
             <input
                     class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -53,9 +45,9 @@
                     id="description-{{ section.id }}"
                     name="description"
                     type="text">
-            <input type="hidden" name="parent_id" value="{{ section.getId() }}">
+            <input type="hidden" name="parent_id" value="{{ section.id }}">
             <button
-                    data-section-id="{{ section.getId() }}"
+                    data-section-id="{{ section.id }}"
                     class="save-section-button bg-green-600 hover:bg-green-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                 Save
             </button>

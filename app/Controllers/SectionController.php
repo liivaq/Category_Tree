@@ -56,6 +56,7 @@ class SectionController
         try {
 
             $this->createSectionService->execute(new CreateSectionRequest($_POST));
+            Session::flash('success', 'Section successfully added!');
             return new Redirect('/dashboard');
 
         } catch (Exception $exception) {

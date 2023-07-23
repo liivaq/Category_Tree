@@ -28,8 +28,17 @@ function attachEventListenerToElements(selector, eventType, handlerFunction) {
 
 document.addEventListener('DOMContentLoaded', function () {
 
-    attachEventListenerToElements('.save-button', 'click', handleSaveButton);
+    const duration = 2000;
 
+    const successMessageContainer = document.getElementById('success-message');
+    if (successMessageContainer) {
+        // Hide the success message after the specified duration
+        setTimeout(function() {
+            toggleElementVisibility('#success-message');
+        }, duration);
+    }
+
+    attachEventListenerToElements('.save-button', 'click', handleSaveButton);
 
     attachEventListenerToElements('.delete-button', 'click', handleDeleteButton);
 

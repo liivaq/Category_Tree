@@ -47,7 +47,7 @@ class Section
         return $this->parentId;
     }
 
-    public function getUserId()
+    public function getUserId(): int
     {
         return $this->userId;
     }
