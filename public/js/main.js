@@ -111,8 +111,10 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 if (data.success) {
                     const elementToRemove = document.querySelector(`#main-section-${sectionId}`);
+                    const children = document.querySelector(`#section-${sectionId}`)
                     if (elementToRemove) {
                         elementToRemove.remove();
+                        children.remove();
                     }
                 } else {
                     const errorMessageElement = document.querySelector(`#database-error`);
