@@ -28,6 +28,6 @@ User page has these features:
     - Necessary queries for table generation are available in the file `db_queries.sql`
 4. Copy the `.env.example` file, rename to `.env` and add your database information there (host, name, username, password)
 5. Run command `composer install` to install the necessary dependencies,
-6. Start a local server using the command `php -S localhost:8000 -t public/`,
+6. Start a local server from the public folder using the command `php -S localhost:8000 -t public/`,
 7. Click on the generated link or open `localhost:8000` in your browser.
 8. Enjoy!
